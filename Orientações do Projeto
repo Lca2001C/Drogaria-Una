@@ -1,0 +1,43 @@
+//Projeto Drogaria Una
+//Orientações:
+//Não será admitida cópia de trabalhos, de espécie alguma. Entendam não admitir cópia como sendo premiação com nota zero para os envolvidos.
+//Pode ser feito em grupos de até 5 alunos. Todos os integrantes devem comparecer no dia da apresentação, quando serão avaliados. O aluno que não demonstrar conhecimento sobre o trabalho será penalizado na nota.
+//Todos os integrantes do grupo devem colocar o link do repositório na tarefa Projeto A3 no Ulife até dia 16/06 às 23:59.
+//Pontuação: 20 pontos
+//Apresentação: 17/06 
+
+//Introdução 
+//O objetivo do projeto é treinar e praticar seus conhecimentos sobre Programação de Soluções Computacionais. 
+//Checkpoint do Projeto
+//Responder ao formulário até dia 20/04. 
+
+//Desenvolvimento 
+
+//Crie uma aplicação para um problema do mundo real com o tema a escolha do grupo. Descreva a relevância dele: para que serve? quem é seu público? qual o seu propósito?
+//Ideias de temas: Sistema de biblioteca, Sistema de Locadora, Gerenciamento de Loja, Jogo de Perguntas e Respostas, Sistema de gerenciamento escolar, Sistema de Clínica, Lista de Compras, Agenda, Sistema Bancário, etc.
+//O programa deverá ser desenvolvido em Java e orientado a objetos. Desejável usar herança e polimorfismo. Não basta funcionar, tem que seguir os princípios de OO.
+//O programa deve ter, no mínimo, 4 classes, sendo uma delas a classe Principal.
+//A classe Principal deverá ter um menu de opções que deve fazer, no mínimo, as seguintes ações:
+//Inserir
+//Alterar
+//Remover
+//Listar 
+//Sair (o sistema só pode ser fechado quando o usuário digitar a opção para sair).
+
+//Para cada classe, deve-se obedecer as seguintes orientações:
+//• Atributos: todos devem ser privados, podendo utilizar protegido caso esteja usando o conceito de herança.
+//• Método construtor que inicializa os atributos necessários através de parâmetros.
+//• Métodos get e set para obter e modificar atributos, quando necessário.
+//Faça comentários no formato JavaDoc para todas as classes e todos os métodos públicos. Gere uma documentação em .pdf usando este utilitário.
+//O sistema deve ser claro para qualquer usuário que o utilizar.
+//O código tem que "rodar" no dia da apresentação.
+//Extra: utilização de banco de dados e interface gráfica.
+
+//Apresentação
+//Crie uma apresentação de slides (Introdução, Motivação, Desenvolvimento, Resultados e Considerações Finais)
+//Todos os integrantes devem comparecer no dia da apresentação aptos a responder sobre o projeto, podendo no mínimo 2 alunos apresentarem o projeto.
+//Cada grupo terá 5 minutos para apresentar o projeto e 5 minutos de arguição.
+//Critérios de Avaliação e Distribuição da Pontuação
+//Código (13,5 pts): funcionamento, estrutura, OO, atendimento dos critérios exigidos.
+//Javadoc (1,5 pts): entrega dos tópicos exigidos, ortografia e gramática, organização.
+//Apresentação (5 pts): criatividade, originalidade, qualidade, gestão do tempo, ortografia e gramática, organização.
