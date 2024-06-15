@@ -29,7 +29,9 @@ public class Drogaria {
         }
     }
     private static void criarFuncionario() throws SQLException{
+        System.out.println(" Digite o nome do funcionario: ");
         String nome = scanner.nextLine();
+        System.out.println(" Selecione a função do funcionario (1) - para vendedor e (2) - para administrador : ");
         int tipo = scanner.nextInt();
         Conexao exec = new Conexao();
         String sql = "create table funcionarios( "+
