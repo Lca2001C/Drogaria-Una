@@ -1,0 +1,389 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Farm {
+/**
+ * Classe Administrador que estende a classe Funcionário.
+ * Representa um administrador no sistema.
+ */
+public class Administrador extends Funcionario {
+
+    /**
+     * Construtor da classe Administrador.
+     * 
+     * @param nome Nome do administrador.
+     * @param id Identificação do administrador.
+     */
+    public Administrador(String nome, int id) {
+        super(nome, id);
+    }
+
+    /**
+     * Método para cadastrar um produto.
+     * Override do método abstrato da classe Funcionário.
+     */
+    @Override
+    public void cadastrarProduto() {
+        System.out.println("Produto cadastrado pelo administrador " + getNome());
+    }
+
+    /**
+     * Método para realizar uma venda.
+     * Override do método abstrato da classe Funcionário.
+     * Administrador não pode realizar vendas, então imprime uma mensagem de acesso negado.
+     */
+    @Override
+    public void realizarVenda() {
+        System.out.println("Acesso negado: Administrador não pode realizar vendas.");
+    }
+
+    /**
+     * Método para obter o tipo do funcionário.
+     * Override do método abstrato da classe Funcionário.
+     * 
+     * @return O tipo de funcionário (2 para Administrador).
+     */
+    @Override
+    public int getTipo() {
+        return 2;
+    }
+}
+
+/**
+ * Classe Conexao para gerenciar a conexão com o banco de dados.
+ */
+public class Conexao {
+    static final String DB_URL = "jdbc:mysql://localhost:3306/drogaria_una";
+    static final String USER = "root";
+    static final String PASS = "teste123!";
+
+    private Connection dbconn = null;
+    private Statement sqlmgr = null;
+
+    /**
+     * Método para abrir a conexão com o banco de dados.
+     * 
+     * @return A conexão aberta.
+     */
+    public Connection openDatabase() {
+        try {
+            dbconn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Conectado com sucesso");
+            sqlmgr = dbconn.createStatement();
+        } catch (Exception error) {
+            System.out.println("Erro ao conectar: " + error.getMessage());
+        }
+        return dbconn;
+    }
+
+    /**
+     * Método para fechar a conexão com o banco de dados.
+     * 
+     * @throws SQLException se ocorrer um erro ao fechar a conexão.
+     */
+    public void closeDatabase() throws SQLException {
+        if (sqlmgr != null) {
+            sqlmgr.close();
+        }
+        if (dbconn != null) {
+            dbconn.close();
+        }
+    }
+
+    /**
+     * Método para executar uma consulta SQL.
+     * 
+     * @param sql A consulta SQL a ser executada.
+     * @return O número de linhas afetadas pela consulta.
+     */
+    public int executarQuery(String sql) {
+        try {
+            return sqlmgr.executeUpdate(sql);
+        } catch (Exception error) {
+            System.out.println("Erro ao executar consulta: " + error.getMessage());
+        }
+        return -1;
+    }
+}
+
+/**
+ * Classe Drogaria que representa a aplicação principal da drogaria.
+ */
+public class Drogaria {
+    private static Estoque estoque = new Estoque();
+    private static Scanner scanner = new Scanner(System.in);
+    private static Conexao conexao = new Conexao();
+
+    /**
+     * Método principal da aplicação.
+     * 
+     * @param args Argumentos da linha de comando.
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados.
+     */
+    public static void main(String[] args) throws SQLException {
+        while (true) {
+            System.out.println("Menu:");
+            System.out.println("1. Criar funcionário");
+            System.out.println("2. Acessar como funcionário");
+            System.out.println("3. Sair");
+            int opcao = scanner.nextInt();
+            scanner.nextLine(); // Consumir nova linha
+
+            switch (opcao) {
+                case 1:
+                    criarFuncionario();
+                    break;
+                case 2:
+                    acessarComoFuncionario();
+                    break;
+                case 3:
+                    System.out.println("Saindo...");
+                    return;
+                default:
+                    System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+    /**
+     * Método para criar um novo funcionário.
+     * 
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados.
+     */
+    private static void criarFuncionario() throws SQLException {
+        System.out.print("Nome do funcionário: ");
+        String nome = scanner.nextLine();
+        System.out.print("Tipo do funcionário (1 - Vendedor, 2 - Administrador): ");
+        int tipo = scanner.nextInt();
+        scanner.nextLine(); // Consumir nova linha
+
+        Conexao exec = new Conexao();
+        String sql = "CREATE TABLE IF NOT EXISTS funcionarios (" +
+                     "id INT NOT NULL AUTO_INCREMENT," +
+                     "nome VARCHAR(50) NOT NULL," +
+                     "tipo INT NOT NULL," +
+                     "PRIMARY KEY (id))";
+        exec.openDatabase();
+        exec.executarQuery(sql);
+
+        sql = "INSERT INTO funcionarios (nome, tipo) VALUES ('" + nome + "', '" + tipo + "')";
+        exec.executarQuery(sql);
+        exec.closeDatabase();
+    }
+
+    /**
+     * Método para acessar como funcionário.
+     * 
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados.
+     */
+    private static void acessarComoFuncionario() throws SQLException {
+        System.out.print("ID do funcionário: ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consumir nova linha
+
+        int tipoFuncionario = buscarFuncionarioPorId(id);
+        if (tipoFuncionario == 0) {
+            System.out.println("Funcionário não encontrado.");
+            return;
+        }
+
+        if (tipoFuncionario == 1) {
+            menuVendedor(new Vendedor("Vendedor", id)); // Substitua por um objeto real conforme necessário
+        } else if (tipoFuncionario == 2) {
+            menuAdministrador(new Administrador("Administrador", id)); // Substitua por um objeto real conforme necessário
+        } else {
+            System.out.println("Tipo de funcionário desconhecido.");
+        }
+    }
+
+    /**
+     * Método para buscar o tipo de um funcionário pelo ID.
+     * 
+     * @param id O ID do funcionário.
+     * @return O tipo do funcionário.
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados.
+     */
+    public static int buscarFuncionarioPorId(int id) throws SQLException {
+        Conexao exec = new Conexao();
+        String sql = "SELECT id, tipo FROM funcionarios WHERE id = ?";
+        Connection conexao = null;
+
+        int tipo = 0;
+        try {
+            conexao = exec.openDatabase();
+            if (conexao != null) {
+                try (PreparedStatement preparedStatement = conexao.prepareStatement(sql)) {
+                    preparedStatement.setInt(1, id);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        tipo = resultSet.getInt("tipo");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // É uma boa prática registrar a exceção
+        } finally {
+            try {
+                exec.closeDatabase();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tipo;
+    }
+
+    // Métodos de menu e operações omitidos para brevidade
+}
+
+/**
+ * Classe Estoque que representa o estoque da drogaria.
+ */
+public class Estoque {
+    private List<Produto> produtos;
+
+    public Estoque() {
+        this.produtos = new ArrayList<>();
+    }
+
+    public void adicionarProduto(Produto produto) {
+        produtos.add(produto);
+        System.out.println("Produto adicionado: " + produto.getNome());
+    }
+
+    public void removerProduto(Produto produto) {
+        if (produtos.remove(produto)) {
+            System.out.println("Produto removido: " + produto.getNome());
+        } else {
+            System.out.println("Produto não encontrado: " + produto.getNome());
+        }
+    }
+
+    public void listarProdutos() {
+        if (produtos.isEmpty()) {
+            System.out.println("Estoque vazio.");
+        } else {
+            for (Produto produto : produtos) {
+                System.out.println("Nome: " + produto.getNome() + ", Preço: " + produto.getPreco() + ", Info: " + produto.getInformacaoTarja());
+            }
+        }
+    }
+
+    public Produto buscarPorNome(String nome) {
+        for (Produto produto : produtos) {
+            if (produto.getNome().equalsIgnoreCase(nome)) {
+                return produto;
+            }
+        }
+        return null;
+    }
+
+    public void realizarVenda(String nome, int quantidade) {
+        Produto produto = buscarPorNome(nome);
+        if (produto != null) {
+            if (produto.getQuantidade() >= quantidade) {
+                produto.setQuantidade(produto.getQuantidade() - quantidade);
+                System.out.println("Venda realizada. Quantidade restante do produto " + nome + ": " + produto.getQuantidade());
+            } else {
+                System.out.println("Quantidade insuficiente em estoque.");
+            }
+        } else {
+            System.out.println("Produto não encontrado.");
+        }
+    }
+}
+
+/**
+ * Classe Funcionario que representa um funcionário da drogaria.
+ */
+public abstract class Funcionario {
+    private String nome;
+    private int id;
+
+    public Funcionario(String nome, int id) {
+        this.nome = nome;
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public abstract void cadastrarProduto();
+    public abstract void realizarVenda();
+    public abstract int getTipo();
+}
+
+/**
+ * Classe Produto que representa um produto da drogaria.
+ */
+public class Produto {
+    private String nome;
+    private double preco;
+    private int quantidade;
+    private String informacaoTarja;
+
+    public Produto(String nome, double preco, int quantidade, String informacaoTarja) {
+        this.nome = nome;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.informacaoTarja = informacaoTarja;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getInformacaoTarja() {
+        return informacaoTarja;
+    }
+}
+
+/**
+ * Classe Vendedor que estende a classe Funcionario.
+ * Representa um vendedor no sistema.
+ */
+public class Vendedor extends Funcionario {
+
+    public Vendedor(String nome, int id) {
+        super(nome, id);
+    }
+
+    @Override
+    public void cadastrarProduto() {
+        System.out.println("Acesso negado: Vendedor não pode cadastrar produtos.");
+    }
+
+    @Override
+    public void realizarVenda() {
+        System.out.println("Venda realizada pelo vendedor " + getNome());
+    }
+
+    @Override
+    public int getTipo() {
+        return 1;
+    }
+}
+}
