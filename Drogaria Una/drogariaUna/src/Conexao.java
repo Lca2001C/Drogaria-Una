@@ -2,7 +2,7 @@ import java.sql.*;
 public class Conexao {
     static final String DB_URL = "jdbc:mysql://localhost:3306/drogaria_una";
     static final String USER = "root";
-    static final String PASS = "teste123!";
+    static final String PASS = "Luc@s012";
 
     private Connection dbconn = null;
     private Statement sqlmgr = null;
